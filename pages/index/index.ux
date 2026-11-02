@@ -1,157 +1,164 @@
 <template>
-  <div class="root" onclick="tap">
-    <div class="ground"></div>
-    <div class="player" style="top: {{pt}}px;"></div>
-    <div class="ob" style="left: {{o0x}}px; top: {{o0t}}px; width: {{o0w}}px; height: {{o0h}}px;"></div>
-    <div class="ob" style="left: {{o1x}}px; top: {{o1t}}px; width: {{o1w}}px; height: {{o1h}}px;"></div>
-    <div class="ob" style="left: {{o2x}}px; top: {{o2t}}px; width: {{o2w}}px; height: {{o2h}}px;"></div>
+  <div class="root">
+    <div class="moon"></div>
+    <div class="plat" for="{{plats}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></div>
+    <div class="lava" style="top: {{lt}}px;"></div>
+    <div class="shadow" style="left: {{px}}px; top: {{pt}}px;"></div>
+    <div class="player" style="left: {{px}}px; top: {{pt}}px;">
+      <div class="eye" style="left: {{ex}}px;"></div>
+    </div>
     <text class="score">{{score}}</text>
     <text class="msg">{{msg}}</text>
+    <div class="btn bl" ontouchstart="lDown" ontouchend="lUp" ontouchcancel="lUp"><text class="bt">{{tl}}</text></div>
+    <div class="btn br" ontouchstart="rDown" ontouchend="rUp" ontouchcancel="rUp"><text class="bt">{{tr}}</text></div>
+    <div class="btn bj" ontouchstart="jDown" ontouchend="jUp" ontouchcancel="jUp"><text class="bt">{{tj}}</text></div>
   </div>
 </template>
 
 <style>
-  .root { width: 466px; height: 466px; background-color: #12182b; }
-  .ground { position: absolute; left: 0px; top: 330px; width: 466px; height: 136px; background-color: #3ddc84; }
-  .player { position: absolute; left: 120px; width: 30px; height: 44px; background-color: #ffd740; border-radius: 8px; }
-  .ob { position: absolute; background-color: #ff5252; }
-  .score { position: absolute; left: 0px; top: 60px; width: 466px; text-align: center; font-size: 40px; color: #ffffff; }
-  .msg { position: absolute; left: 0px; top: 130px; width: 466px; text-align: center; font-size: 28px; color: #ffffff; }
+  .root { width: 466px; height: 466px; background-image: linear-gradient(#0d1233, #4a2f8f); }
+  .moon { position: absolute; left: 310px; top: 70px; width: 44px; height: 44px; border-radius: 22px; background-color: #f4efd0; opacity: 0.85; }
+  .plat { position: absolute; border-radius: 7px; }
+  .lava { position: absolute; left: 0px; width: 466px; height: 700px; background-image: linear-gradient(#ffb300, #ff3d00, #7a0000); }
+  .player { position: absolute; width: 28px; height: 40px; border-radius: 10px; background-color: #ffd740; }
+  .shadow { position: absolute; width: 28px; height: 40px; border-radius: 10px; background-color: #000000; opacity: 0.0; }
+  .eye { position: absolute; top: 9px; width: 8px; height: 8px; border-radius: 4px; background-color: #1a1a1a; }
+  .score { position: absolute; left: 0px; top: 36px; width: 466px; text-align: center; font-size: 38px; color: #ffffff; }
+  .msg { position: absolute; left: 0px; top: 110px; width: 466px; text-align: center; font-size: 26px; color: #ffffff; }
+  .btn { position: absolute; top: 342px; height: 58px; border-radius: 29px; background-color: rgba(255,255,255,0.22); align-items: center; justify-content: center; }
+  .bl { left: 92px; width: 66px; }
+  .br { left: 166px; width: 66px; }
+  .bj { left: 262px; width: 110px; background-color: rgba(61,220,132,0.45); }
+  .bt { font-size: 30px; color: #ffffff; text-align: center; }
 </style>
 
 <script>
 import storage from '@system.storage'
 
-const GY = 330
-const PX = 120
-const PW = 30
-const PH = 44
+const PW = 28
+const PH = 40
+const GAP = 95
+
+function platW(k) { return k === 0 ? 466 : Math.max(50, 115 - k) }
+function platX(k, w) {
+  if (k === 0) return 0
+  const c = 233 + 120 * Math.sin(k * 0.8 + Math.sin(k * 0.37) * 2)
+  return Math.max(60, Math.min(406 - w, Math.round(c - w / 2)))
+}
 
 export default {
   data: {
-    pt: 286,
-    score: 0,
-    msg: 'Тап — старт',
-    o0x: 600, o0t: 280, o0w: 30, o0h: 50,
-    o1x: 900, o1t: 280, o1w: 30, o1h: 50,
-    o2x: 1200, o2t: 280, o2w: 30, o2h: 50
+    plats: [], px: 219, pt: 260, ex: 16, lt: 500,
+    score: '0 м', msg: 'Нажми прыжок', tl: '<', tr: '>', tj: 'ПРЫЖОК'
   },
 
   onInit() {
     this.state = 'ready'
     this.best = 0
+    this.hL = false; this.hR = false; this.hJ = false
     this.resetVars()
+    this.render()
     try {
-      storage.get({
-        key: 'best',
-        success: (v) => { this.best = parseInt(v) || 0 },
-        fail: () => {}
-      })
+      storage.get({ key: 'tbest', success: (v) => { this.best = parseInt(v) || 0 }, fail: () => {} })
     } catch (e) {}
   },
 
-  onShow() {
-    if (!this.timer) {
-      this.timer = setInterval(() => this.tick(), 50)
-    }
-  },
+  onShow() { if (!this.timer) this.timer = setInterval(() => this.tick(), 40) },
+  onHide() { clearInterval(this.timer); this.timer = null },
+  onDestroy() { clearInterval(this.timer); this.timer = null },
 
-  onHide() {
-    clearInterval(this.timer)
-    this.timer = null
-    if (this.state === 'play') {
-      this.state = 'ready'
-      this.msg = 'Тап — старт'
-    }
-  },
-
-  onDestroy() {
-    clearInterval(this.timer)
-    this.timer = null
-  },
-
-  resetVars() {
-    this.y = GY
-    this.vy = 0
-    this.jumps = 0
-    this.sc = 0
-    this.obs = [
-      { x: 560, w: 30, h: 50 },
-      { x: 880, w: 30, h: 50 },
-      { x: 1200, w: 30, h: 50 }
-    ]
-  },
-
-  tap() {
-    if (this.state === 'ready' || this.state === 'dead') {
+  lDown() { this.hL = true },  lUp() { this.hL = false },
+  rDown() { this.hR = true },  rUp() { this.hR = false },
+  jDown() {
+    this.hJ = true
+    if (this.state !== 'play') {
       this.resetVars()
       this.state = 'play'
       this.msg = ''
-      this.jump()
-    } else if (this.state === 'play') {
-      this.jump()
     }
   },
+  jUp() { this.hJ = false },
 
-  jump() {
-    if (this.jumps < 2) {
-      this.vy = this.jumps === 0 ? -17 : -15
-      this.jumps++
-    }
+  resetVars() {
+    this.x = 219
+    this.y = 0
+    this.vy = 0
+    this.air = 0
+    this.f = 1
+    this.cam = -300
+    this.lava = 230
+    this.top = 0
   },
 
   die() {
     this.state = 'dead'
-    const s = Math.floor(this.sc)
-    if (s > this.best) {
-      this.best = s
-      try { storage.set({ key: 'best', value: String(s) }) } catch (e) {}
+    if (this.top > this.best) {
+      this.best = this.top
+      try { storage.set({ key: 'tbest', value: String(this.best) }) } catch (e) {}
     }
-    this.msg = 'Конец! Рекорд ' + this.best
+    this.msg = 'Лава! Рекорд ' + this.best + ' м'
   },
 
   tick() {
-    if (this.state !== 'play') return
+    if (this.state === 'play') {
+      const dx = (this.hR ? 1 : 0) - (this.hL ? 1 : 0)
+      if (dx !== 0) this.f = dx
+      this.x = Math.max(0, Math.min(466 - PW, this.x + dx * 9))
 
-    const speed = Math.min(9 + this.sc / 300, 15)
-    this.sc += speed * 0.1
+      if (this.hJ && this.air < 4) { this.vy = -19; this.air = 99 }
 
-    // физика
-    this.vy += 1.2
-    this.y += this.vy
-    if (this.y >= GY) {
-      this.y = GY
-      this.vy = 0
-      this.jumps = 0
-    }
+      const prev = this.y
+      this.vy = Math.min(this.vy + 1.3, 26)
+      this.y += this.vy
+      this.air++
 
-    // препятствия
-    let far = 0
-    for (let i = 0; i < 3; i++) {
-      const o = this.obs[i]
-      o.x -= speed
-      if (o.x > far) far = o.x
-    }
-    for (let i = 0; i < 3; i++) {
-      const o = this.obs[i]
-      if (o.x + o.w < 0) {
-        o.x = Math.max(far, 466) + 260 + Math.random() * 200
-        o.w = 26 + Math.floor(Math.random() * 16)
-        o.h = 36 + Math.floor(Math.random() * 36)
-        far = o.x
+      if (this.vy > 0) {
+        const k0 = Math.round(-this.y / GAP)
+        for (let k = Math.max(0, k0 - 1); k <= k0 + 1; k++) {
+          const top = -k * GAP
+          const w = platW(k)
+          const x = platX(k, w)
+          if (prev <= top + 1 && this.y >= top && this.x + PW > x && this.x < x + w) {
+            this.y = top
+            this.vy = 0
+            this.air = 0
+            break
+          }
+        }
       }
-      if (PX + PW - 4 > o.x && PX + 4 < o.x + o.w && this.y > GY - o.h + 4) {
-        this.die()
-      }
-    }
 
-    // обновление экрана
-    const o = this.obs
-    this.pt = Math.round(this.y - PH)
-    this.score = Math.floor(this.sc)
-    this.o0x = Math.round(o[0].x); this.o0w = o[0].w; this.o0h = o[0].h; this.o0t = GY - o[0].h
-    this.o1x = Math.round(o[1].x); this.o1w = o[1].w; this.o1h = o[1].h; this.o1t = GY - o[1].h
-    this.o2x = Math.round(o[2].x); this.o2w = o[2].w; this.o2h = o[2].h; this.o2t = GY - o[2].h
+      const h = Math.floor(-this.y / 10)
+      if (h > this.top) this.top = h
+
+      this.lava -= 0.9 + this.top / 150
+      if (this.y > this.lava) this.die()
+
+      this.cam += (this.y - 300 - this.cam) * 0.25
+    }
+    this.render()
+  },
+
+  render() {
+    const cam = this.cam
+    const kmin = Math.max(0, Math.ceil(-(cam + 480) / GAP))
+    const kmax = Math.floor(-(cam - 40) / GAP)
+    const list = []
+    for (let k = kmin; k <= kmax; k++) {
+      const w = platW(k)
+      list.push({
+        x: platX(k, w),
+        t: Math.round(-k * GAP - cam),
+        w: w,
+        h: k === 0 ? 90 : 14,
+        c: k === 0 ? '#3ddc84' : (k % 3 === 0 ? '#4fc3f7' : (k % 3 === 1 ? '#ba68c8' : '#ffb74d'))
+      })
+    }
+    this.plats = list
+    this.px = Math.round(this.x)
+    this.pt = Math.round(this.y - cam - PH)
+    this.ex = this.f > 0 ? 16 : 4
+    this.lt = Math.round(this.lava - cam)
+    this.score = this.top + ' м'
   }
 }
 </script>
