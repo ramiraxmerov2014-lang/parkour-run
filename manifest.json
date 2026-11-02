@@ -3,13 +3,15 @@
   "name": "Parkour Run",
   "versionName": "1.0.0",
   "versionCode": 1,
-  "minPlatformVersion": 1000,
+  "minAPILevel": 1,
   "icon": "/logo.png",
   "features": [{ "name": "system.storage" }],
   "config": { "logLevel": "log", "designWidth": 466 },
   "router": {
     "entry": "pages/index",
-    "pages": { "pages/index": { "component": "index" } }
+    "pages": {
+      "pages/index": { "component": "index" }
+    }
   },
   "display": { "titleBar": false }
 }
