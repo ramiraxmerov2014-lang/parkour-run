@@ -1,0 +1,21 @@
+name: Build RPK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18 }
+      - run: npm install
+      - name: Generate signing keys
+        run: |
+          mkdir -p sign
+          openssl req -newkey rsa:2048 -nodes -keyout sign/private.pem -x509 -days 3650 -out sign/certificate.pem -subj "/CN=parkour"
+      - run: npx aiot release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpk
+          path: dist/*.rpk
