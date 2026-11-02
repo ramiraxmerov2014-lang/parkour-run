@@ -14,8 +14,18 @@ jobs:
         run: |
           mkdir -p sign
           openssl req -newkey rsa:2048 -nodes -keyout sign/private.pem -x509 -days 3650 -out sign/certificate.pem -subj "/CN=parkour"
-      - run: npx aiot release
+      - name: Release
+        run: npx aiot release
+      - name: Show result
+        run: |
+          ls -R . | grep -v node_modules | head -80
+          find . -name "*.rpk" -not -path "./node_modules/*"
       - uses: actions/upload-artifact@v4
         with:
           name: rpk
-          path: dist/*.rpk
+          path: |
+            dist
+            build
+            **/*.rpk
+            !node_modules/**
+          if-no-files-found: warn
