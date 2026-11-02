@@ -10,6 +10,10 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 18 }
       - run: npm install
+      - name: Prepare src
+        run: |
+          mkdir -p src
+          cp -r manifest.json app.ux logo.png pages src/
       - name: Generate signing keys
         run: |
           mkdir -p sign
@@ -18,7 +22,7 @@ jobs:
         run: npx aiot release
       - name: Show result
         run: |
-          ls -R . | grep -v node_modules | head -80
+          ls -R dist build 2>/dev/null | head -50
           find . -name "*.rpk" -not -path "./node_modules/*"
       - uses: actions/upload-artifact@v4
         with:
@@ -26,6 +30,4 @@ jobs:
           path: |
             dist
             build
-            **/*.rpk
-            !node_modules/**
           if-no-files-found: warn
