@@ -1,0 +1,202 @@
+<template>
+  <div class="root" onclick="tap">
+    <canvas id="c" class="cv"></canvas>
+  </div>
+</template>
+
+<style>
+  .root { width: 466px; height: 466px; background-color: #000000; }
+  .cv { width: 466px; height: 466px; }
+</style>
+
+<script>
+import storage from '@system.storage'
+
+const W = 466
+const GY = 330        // линия земли
+const PX = 120        // x игрока
+const PW = 30
+const PH = 44
+
+export default {
+  data: {},
+
+  onReady() {
+    this.ctx = this.$element('c').getContext('2d')
+    this.best = 0
+    try {
+      storage.get({
+        key: 'best',
+        success: (v) => { this.best = parseInt(v) || 0 },
+        fail: () => {}
+      })
+    } catch (e) {}
+    this.reset()
+    this.state = 'ready'
+    this.timer = setInterval(() => this.tick(), 33)
+  },
+
+  onDestroy() { clearInterval(this.timer) },
+  onHide() { if (this.state === 'play') this.state = 'ready' },
+
+  reset() {
+    this.y = GY
+    this.vy = 0
+    this.jumps = 0
+    this.score = 0
+    this.frame = 0
+    this.obs = []
+    this.gaps = []
+    this.nextSpawn = 260
+  },
+
+  tap() {
+    if (this.state === 'ready') {
+      this.reset()
+      this.state = 'play'
+      this.jump()
+    } else if (this.state === 'play') {
+      this.jump()
+    } else if (this.state === 'dead') {
+      this.reset()
+      this.state = 'play'
+    }
+  },
+
+  jump() {
+    if (this.jumps < 2) {
+      this.vy = this.jumps === 0 ? -15 : -13
+      this.jumps++
+    }
+  },
+
+  overGap() {
+    const cx = PX + PW / 2
+    for (let i = 0; i < this.gaps.length; i++) {
+      const g = this.gaps[i]
+      if (cx > g.x + 6 && cx < g.x + g.w - 6) return true
+    }
+    return false
+  },
+
+  die() {
+    this.state = 'dead'
+    const s = Math.floor(this.score)
+    if (s > this.best) {
+      this.best = s
+      try { storage.set({ key: 'best', value: String(s) }) } catch (e) {}
+    }
+  },
+
+  tick() {
+    if (this.state === 'play') {
+      this.frame++
+      const speed = Math.min(7 + this.score / 400, 13)
+      this.score += speed * 0.1
+
+      // движение мира
+      for (let i = this.obs.length - 1; i >= 0; i--) {
+        this.obs[i].x -= speed
+        if (this.obs[i].x + this.obs[i].w < -20) this.obs.splice(i, 1)
+      }
+      for (let i = this.gaps.length - 1; i >= 0; i--) {
+        this.gaps[i].x -= speed
+        if (this.gaps[i].x + this.gaps[i].w < -20) this.gaps.splice(i, 1)
+      }
+
+      // спавн препятствий
+      this.nextSpawn -= speed
+      if (this.nextSpawn <= 0) {
+        if (Math.random() < 0.6) {
+          this.obs.push({ x: W + 20, w: 28 + Math.random() * 14, h: 36 + Math.random() * 36 })
+        } else {
+          this.gaps.push({ x: W + 20, w: 70 + Math.random() * 40 })
+        }
+        this.nextSpawn = 250 + Math.random() * 180 + speed * 10
+      }
+
+      // физика
+      this.vy += 0.9
+      this.y += this.vy
+      if (this.y >= GY && !this.overGap() && this.vy >= 0) {
+        this.y = GY
+        this.vy = 0
+        this.jumps = 0
+      }
+      if (this.y > GY + 90) this.die()
+
+      // столкновения с блоками
+      for (let i = 0; i < this.obs.length; i++) {
+        const o = this.obs[i]
+        if (PX + PW - 4 > o.x && PX + 4 < o.x + o.w && this.y > GY - o.h + 4) {
+          this.die()
+          break
+        }
+      }
+    }
+    this.draw()
+  },
+
+  draw() {
+    const c = this.ctx
+    c.clearRect(0, 0, W, W)
+
+    // фон
+    c.fillStyle = '#12182b'
+    c.fillRect(0, 0, W, W)
+    c.fillStyle = '#1f2a4a'
+    c.fillRect(0, 200, W, GY - 200)
+
+    // земля (с ямами)
+    c.fillStyle = '#3ddc84'
+    let x = 0
+    const gs = this.gaps.slice().sort((a, b) => a.x - b.x)
+    for (let i = 0; i < gs.length; i++) {
+      if (gs[i].x > x) c.fillRect(x, GY, gs[i].x - x, W - GY)
+      x = Math.max(x, gs[i].x + gs[i].w)
+    }
+    if (x < W) c.fillRect(x, GY, W - x, W - GY)
+
+    // препятствия
+    c.fillStyle = '#ff5252'
+    for (let i = 0; i < this.obs.length; i++) {
+      const o = this.obs[i]
+      c.fillRect(o.x, GY - o.h, o.w, o.h)
+    }
+
+    // игрок
+    const px = PX, py = this.y
+    c.fillStyle = '#ffd740'
+    c.fillRect(px, py - PH + 14, PW, PH - 26)           // тело
+    c.beginPath()
+    c.arc(px + PW / 2, py - PH + 8, 10, 0, Math.PI * 2) // голова
+    c.fill()
+    const onGround = this.y >= GY && this.vy === 0
+    const sw = onGround ? (Math.floor(this.frame / 4) % 2) * 6 : 4
+    c.fillRect(px + 2, py - 12, 9, 12 - sw / 2)
+    c.fillRect(px + PW - 11, py - 12, 9, 6 + sw)
+
+    // текст
+    c.fillStyle = '#ffffff'
+    c.textAlign = 'center'
+    c.font = '34px sans-serif'
+    c.fillText(String(Math.floor(this.score)), W / 2, 90)
+
+    if (this.state === 'ready') {
+      c.font = '30px sans-serif'
+      c.fillText('PARKOUR RUN', W / 2, 160)
+      c.font = '24px sans-serif'
+      c.fillText('Тап = прыжок', W / 2, 200)
+      c.fillText('Рекорд: ' + this.best, W / 2, 400)
+    } else if (this.state === 'dead') {
+      c.fillStyle = '#ff5252'
+      c.font = '38px sans-serif'
+      c.fillText('GAME OVER', W / 2, 160)
+      c.fillStyle = '#ffffff'
+      c.font = '26px sans-serif'
+      c.fillText('Рекорд: ' + this.best, W / 2, 200)
+      c.fillText('Тап — заново', W / 2, 400)
+    }
+  }
+}
+</script>
