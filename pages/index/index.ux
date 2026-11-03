@@ -1,12 +1,12 @@
 <template>
   <div class="root">
-    <div class="moon"></div>
-    <div class="plat" for="{{plats}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></div>
-    <div class="coin" for="{{cns}}" style="left: {{$item.x}}px; top: {{$item.t}}px;"></div>
+    <image class="sky" src="/t_sky.png"></image>
+    <image class="moon" src="/t_moon.png"></image>
+    <image class="plat" for="{{plats}}" src="{{$item.s}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></image>
+    <image class="coin" for="{{cns}}" src="/t_coin.png" style="left: {{$item.x}}px; top: {{$item.t}}px;"></image>
     <div class="lava" style="top: {{lt}}px; height: {{lh}}px;"></div>
-    <div class="player" style="left: {{px}}px; top: {{pt}}px; background-color: {{pc}};">
-      <div class="eye" style="left: {{ex}}px;"></div>
-    </div>
+    <image class="lavatop" src="/t_lava.png" style="top: {{lt}}px; height: {{lvh}}px;"></image>
+    <image class="player" src="{{hs}}" style="left: {{px}}px; top: {{pt}}px;"></image>
     <div class="tapzone" onclick="tapAny"></div>
     <text class="score">{{score}}</text>
     <text class="msg">{{msg}}</text>
@@ -19,12 +19,13 @@
 
 <style>
   .root { width: 466px; height: 466px; background-image: linear-gradient(#0d1233, #4a2f8f); }
-  .moon { position: absolute; left: 310px; top: 70px; width: 44px; height: 44px; border-radius: 22px; background-color: #f4efd0; }
-  .plat { position: absolute; border-radius: 7px; }
-  .coin { position: absolute; width: 16px; height: 16px; border-radius: 8px; background-color: #ffeb3b; }
-  .lava { position: absolute; left: 0px; width: 466px; background-image: linear-gradient(#ffb300, #ff3d00, #7a0000); }
-  .player { position: absolute; width: 28px; height: 40px; border-radius: 10px; }
-  .eye { position: absolute; top: 9px; width: 8px; height: 8px; border-radius: 4px; background-color: #1a1a1a; }
+  .sky { position: absolute; left: 0px; top: 0px; width: 466px; height: 466px; }
+  .moon { position: absolute; left: 310px; top: 70px; width: 44px; height: 44px; }
+  .plat { position: absolute; }
+  .coin { position: absolute; width: 16px; height: 16px; }
+  .lava { position: absolute; left: 0px; width: 466px; background-image: linear-gradient(#ff5a00, #d92b00, #7a0000); }
+  .lavatop { position: absolute; left: 0px; width: 466px; }
+  .player { position: absolute; width: 28px; height: 40px; }
   .tapzone { position: absolute; left: 0px; top: 0px; width: 466px; height: 340px; }
   .score { position: absolute; left: 0px; top: 36px; width: 466px; text-align: center; font-size: 36px; color: #ffffff; }
   .msg { position: absolute; left: 0px; top: 100px; width: 466px; text-align: center; font-size: 28px; color: #ffffff; }
@@ -62,7 +63,7 @@ function platX(k, w, tt) {
 
 export default {
   data: {
-    plats: [], cns: [], px: 219, pt: 260, ex: 16, lt: 466, lh: 0, pc: '#ffd740',
+    plats: [], cns: [], px: 219, pt: 260, lt: 466, lh: 0, lvh: 0, pc: '#ffd740', hs: '/t_hero0.png',
     score: '0 m', msg: '', msg2: '', tl: '<', tr: '>', tj: 'START'
   },
 
@@ -101,6 +102,7 @@ export default {
     if (this.state !== 'dead' && this.state !== 'win') this.msg = m.n
     this.msg2 = rec + (rec ? '  ' : '') + 'Coins: ' + this.total
     this.pc = SKINS[this.skin]
+    this.hs = '/t_hero' + this.skin + '.png'
   },
 
   unlocked() {
@@ -114,6 +116,7 @@ export default {
     const idx = u.indexOf(this.skin)
     this.skin = u[(idx + 1) % u.length]
     this.pc = SKINS[this.skin]
+    this.hs = '/t_hero' + this.skin + '.png'
   },
 
   changeMode(d) {
@@ -287,6 +290,7 @@ export default {
       if (b > a) {
         list.push({
           x: x, t: a, w: w, h: b - a,
+          s: k === 0 ? '/t_ground.png' : (isMoving(k) ? '/t_plat3.png' : '/t_plat' + (k % 3) + '.png'),
           c: k === 0 ? '#3ddc84' : (isMoving(k) ? '#fff176' : (k % 3 === 0 ? '#4fc3f7' : (k % 3 === 1 ? '#ba68c8' : '#ffb74d')))
         })
       }
@@ -299,10 +303,10 @@ export default {
     this.cns = coins
     this.px = Math.round(this.x)
     this.pt = Math.max(0, Math.min(426, Math.round(this.y - cam - PH)))
-    this.ex = this.f > 0 ? 16 : 4
-    const l = Math.round(this.lava - cam)
+        const l = Math.round(this.lava - cam)
     this.lt = Math.max(0, Math.min(466, l))
     this.lh = 466 - this.lt
+    this.lvh = Math.min(24, this.lh)
     this.score = this.top + ' m  ' + this.run + '$'
   }
 }
