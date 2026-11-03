@@ -1,6 +1,6 @@
 {
   "name": "parkour-run",
-  "version": "1.0.5",
+  "version": "1.0.0",
   "scripts": { "build": "aiot build", "release": "aiot release" },
   "devDependencies": { "aiot-toolkit": "latest" }
 }
