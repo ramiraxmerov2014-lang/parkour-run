@@ -1,404 +1,455 @@
 <template>
-  <div class="root" style="background-color: {{bgc}};">
-
-    <div class="scr game" show="{{sGame}}">
-      <image class="sky" show="{{skyOn}}" src="/t_sky.png"></image>
-      <image class="moon" show="{{skyOn}}" src="/t_moon.png"></image>
-      <image class="ground" src="/t_ground.png" style="top: {{gt}}px; height: {{gh}}px;"></image>
-      <div class="plat" for="{{plats}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></div>
-      <div class="coin" for="{{cns}}" style="left: {{$item.x}}px; top: {{$item.t}}px;"></div>
-      <div class="lava" style="top: {{lt}}px; height: {{lh}}px;"></div>
-      <image class="lavatop" src="/t_lava.png" style="top: {{lt}}px; height: {{lvh}}px;"></image>
-      <image class="player" src="{{hs}}" style="left: {{px}}px; top: {{pt}}px;"></image>
-      <div class="tapzone" onclick="tapAny"></div>
-      <text class="score" style="font-size: {{fsScore}}px; font-family: {{ff}}; font-weight: {{fw}};">{{score}}</text>
-      <text class="msg" style="font-size: {{fsMsg}}px; font-family: {{ff}}; font-weight: {{fw}};">{{msg}}</text>
-      <text class="msg2" style="font-size: {{fsMsg2}}px; font-family: {{ff}}; font-weight: {{fw}};">{{msg2}}</text>
-      <div class="btn bl" ontouchstart="lDown" ontouchend="lUp" ontouchcancel="lUp" onclick="lClick"><text class="bt">{{tl}}</text></div>
-      <div class="btn br" ontouchstart="rDown" ontouchend="rUp" ontouchcancel="rUp" onclick="rClick"><text class="bt">{{tr}}</text></div>
-      <div class="btn bj" ontouchstart="jDown" ontouchend="jUp" ontouchcancel="jUp" onclick="jClick"><text class="bt">{{tj}}</text></div>
-      <div class="burger" style="background-color: {{cardc}};" onclick="openPause">
-        <div class="bar" style="background-color: {{textc}};"></div>
-        <div class="bar" style="background-color: {{textc}};"></div>
-        <div class="bar" style="background-color: {{textc}};"></div>
-      </div>
-    </div>
-
-    <div class="scr" show="{{sSplash}}" style="background-color: {{bgc}};" onclick="skipSplash">
-      <image class="sphero" src="/t_hero0.png" style="top: {{hy}}px; opacity: {{sa}};"></image>
-      <text class="sptitle" style="top: {{ty}}px; opacity: {{sa}}; color: {{accc}};">Parkour Run</text>
-      <text class="spsub" style="opacity: {{sb}}; color: {{textc}};">tap to start</text>
-    </div>
-
-    <div class="scr" show="{{sMenu}}" style="background-color: {{bgc}};">
-      <text class="mtitle" style="font-size: {{fsTitle}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{textc}};">Choose mode</text>
-      <text class="msub" style="font-size: {{fsSub}}px; font-family: {{ff}}; color: {{accc}};">{{menuSub}}</text>
-      <div class="card c0" style="background-color: {{cardc}};" onclick="pick0"><text class="cn" style="font-size: {{fsCard}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{textc}};">Classic</text><text class="cb" style="font-size: {{fsCardB}}px; color: {{accc}};">{{b0}}</text></div>
-      <div class="card c1" style="background-color: {{cardc}};" onclick="pick1"><text class="cn" style="font-size: {{fsCard}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{textc}};">Hardcore</text><text class="cb" style="font-size: {{fsCardB}}px; color: {{accc}};">{{b1}}</text></div>
-      <div class="card c2" style="background-color: {{cardc}};" onclick="pick2"><text class="cn" style="font-size: {{fsCard}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{textc}};">Sprint</text><text class="cb" style="font-size: {{fsCardB}}px; color: {{accc}};">{{b2}}</text></div>
-      <div class="card c3" style="background-color: {{cardc}};" onclick="pick3"><text class="cn" style="font-size: {{fsCard}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{textc}};">Practice</text><text class="cb" style="font-size: {{fsCardB}}px; color: {{accc}};">{{b3}}</text></div>
-      <div class="pill setp" style="background-color: {{accc}};" onclick="openSettings"><text class="pt" style="color: {{onacc}};">Settings</text></div>
-    </div>
-
-    <div class="scr" show="{{sSet}}" style="background-color: {{bgc}};">
-      <text class="mtitle" style="font-size: {{fsTitle}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{textc}};">Settings</text>
-      <div class="tile t0" style="background-color: {{cardc}};" onclick="cTheme"><text class="tlb" style="font-size: {{fsTL}}px; color: {{textc}};">Theme</text><text class="tvl" style="font-size: {{fsTV}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{accc}};">{{v0}}</text></div>
-      <div class="tile t1" style="background-color: {{cardc}};" onclick="cText"><text class="tlb" style="font-size: {{fsTL}}px; color: {{textc}};">Text size</text><text class="tvl" style="font-size: {{fsTV}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{accc}};">{{v1}}</text></div>
-      <div class="tile t2" style="background-color: {{cardc}};" onclick="cFont"><text class="tlb" style="font-size: {{fsTL}}px; color: {{textc}};">Font</text><text class="tvl" style="font-size: {{fsTV}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{accc}};">{{v2}}</text></div>
-      <div class="tile t3" style="background-color: {{cardc}};" onclick="cPal"><text class="tlb" style="font-size: {{fsTL}}px; color: {{textc}};">Platforms</text><text class="tvl" style="font-size: {{fsTV}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{accc}};">{{v3}}</text></div>
-      <div class="tile t4" style="background-color: {{cardc}};" onclick="cSky"><text class="tlb" style="font-size: {{fsTL}}px; color: {{textc}};">Sky</text><text class="tvl" style="font-size: {{fsTV}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{accc}};">{{v4}}</text></div>
-      <div class="tile t5" style="background-color: {{cardc}};" onclick="cSkin"><text class="tlb" style="font-size: {{fsTL}}px; color: {{textc}};">Hero</text><text class="tvl" style="font-size: {{fsTV}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{accc}};">{{v5}}</text></div>
-      <div class="pill backp" style="background-color: {{accc}};" onclick="closeSettings"><text class="pt" style="color: {{onacc}};">Back</text></div>
-      <div class="pill menup" style="background-color: {{cardc}};" onclick="toMenu"><text class="pt" style="color: {{textc}};">Main menu</text></div>
-    </div>
-
-  </div>
+<div class="root" style="background-color: {{bgc}};">
+<div class="scr game" show="{{sGame}}">
+<image class="sky" show="{{so}}" src="/t_sky.png"></image>
+<image class="moon" show="{{so}}" src="/t_moon.png"></image>
+<image class="ground" src="/t_ground.png" style="top: {{gt}}px; height: {{gh}}px;"></image>
+<div class="plat" for="{{plats}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></div>
+<div class="coin" for="{{cns}}" style="left: {{$item.x}}px; top: {{$item.t}}px;"></div>
+<div class="lava" style="top: {{lt}}px; height: {{lh}}px;"></div>
+<image class="lavatop" src="/t_lava.png" style="top: {{lt}}px; height: {{lvh}}px;"></image>
+<image class="player" src="{{hs}}" style="left: {{px}}px; top: {{pt}}px;"></image>
+<div class="tapzone" onclick="tapAny"></div>
+<text class="score" style="font-size: {{s1}}px; font-family: {{ff}}; font-weight: {{fw}};">{{score}}</text>
+<text class="msg" style="font-size: {{s2}}px; font-family: {{ff}}; font-weight: {{fw}};">{{msg}}</text>
+<text class="msg2" style="font-size: {{s3}}px; font-family: {{ff}}; font-weight: {{fw}};">{{msg2}}</text>
+<div class="btn bl" ontouchstart="lDown" ontouchend="lUp" onclick="lClick"><text class="bt">{{tl}}</text></div>
+<div class="btn br" ontouchstart="rDown" ontouchend="rUp" onclick="rClick"><text class="bt">{{tr}}</text></div>
+<div class="btn bj" ontouchstart="jDown" ontouchend="jUp" onclick="jClick"><text class="bt">{{tj}}</text></div>
+<div class="burger" style="background-color: {{cc}};" onclick="openPause">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+</div>
+<div class="scr" show="{{sSplash}}" style="background-color: {{bgc}};" onclick="skipSplash">
+<image class="sphero" src="/t_hero0.png" style="top: {{hy}}px; opacity: {{sa}};"></image>
+<text class="sptitle" style="top: {{ty}}px; opacity: {{sa}}; color: {{ak}};">Parkour Run</text>
+<text class="spsub" style="opacity: {{sb}}; color: {{tc}};">tap to start</text>
+</div>
+<div class="scr" show="{{sMenu}}" style="background-color: {{bgc}};">
+<text class="mtitle" style="font-size: {{s4}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{tc}};">Choose mode</text>
+<text class="msub" style="font-size: {{s5}}px; color: {{ak}};">{{ms}}</text>
+<div class="card c0" style="background-color: {{cc}};" onclick="pick0"><text class="cn" style="font-size: {{s6}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{tc}};">Classic</text><text class="cb" style="font-size: {{s7}}px; color: {{ak}};">{{b0}}</text></div>
+<div class="card c1" style="background-color: {{cc}};" onclick="pick1"><text class="cn" style="font-size: {{s6}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{tc}};">Hardcore</text><text class="cb" style="font-size: {{s7}}px; color: {{ak}};">{{b1}}</text></div>
+<div class="card c2" style="background-color: {{cc}};" onclick="pick2"><text class="cn" style="font-size: {{s6}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{tc}};">Sprint</text><text class="cb" style="font-size: {{s7}}px; color: {{ak}};">{{b2}}</text></div>
+<div class="card c3" style="background-color: {{cc}};" onclick="pick3"><text class="cn" style="font-size: {{s6}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{tc}};">Practice</text><text class="cb" style="font-size: {{s7}}px; color: {{ak}};">{{b3}}</text></div>
+<div class="pill setp" style="background-color: {{ak}};" onclick="openSettings"><text class="pt" style="color: {{oc}};">Settings</text></div>
+</div>
+<div class="scr" show="{{sSet}}" style="background-color: {{bgc}};">
+<text class="mtitle" style="font-size: {{s4}}px; font-family: {{ff}}; font-weight: {{fw}}; color: {{tc}};">Settings</text>
+<div class="tile t0" style="background-color: {{cc}};" onclick="cTheme"><text class="tlb" style="font-size: {{s8}}px; color: {{tc}};">Theme</text><text class="tvl" style="font-size: {{s9}}px; color: {{ak}};">{{v0}}</text></div>
+<div class="tile t1" style="background-color: {{cc}};" onclick="cText"><text class="tlb" style="font-size: {{s8}}px; color: {{tc}};">Text size</text><text class="tvl" style="font-size: {{s9}}px; color: {{ak}};">{{v1}}</text></div>
+<div class="tile t2" style="background-color: {{cc}};" onclick="cFont"><text class="tlb" style="font-size: {{s8}}px; color: {{tc}};">Font</text><text class="tvl" style="font-size: {{s9}}px; color: {{ak}};">{{v2}}</text></div>
+<div class="tile t3" style="background-color: {{cc}};" onclick="cPal"><text class="tlb" style="font-size: {{s8}}px; color: {{tc}};">Platforms</text><text class="tvl" style="font-size: {{s9}}px; color: {{ak}};">{{v3}}</text></div>
+<div class="tile t4" style="background-color: {{cc}};" onclick="cSky"><text class="tlb" style="font-size: {{s8}}px; color: {{tc}};">Sky</text><text class="tvl" style="font-size: {{s9}}px; color: {{ak}};">{{v4}}</text></div>
+<div class="tile t5" style="background-color: {{cc}};" onclick="cSkin"><text class="tlb" style="font-size: {{s8}}px; color: {{tc}};">Hero</text><text class="tvl" style="font-size: {{s9}}px; color: {{ak}};">{{v5}}</text></div>
+<div class="pill backp" style="background-color: {{ak}};" onclick="closeSettings"><text class="pt" style="color: {{oc}};">Back</text></div>
+<div class="pill menup" style="background-color: {{cc}};" onclick="toMenu"><text class="pt" style="color: {{tc}};">Main menu</text></div>
+</div>
+</div>
 </template>
-
 <style>
-  .root { width: 466px; height: 466px; }
-  .scr { position: absolute; left: 0px; top: 0px; width: 466px; height: 466px; }
-  .game { background-image: linear-gradient(#0d1233, #4a2f8f); }
-  .sky { position: absolute; left: 0px; top: 0px; width: 466px; height: 466px; }
-  .moon { position: absolute; left: 310px; top: 70px; width: 44px; height: 44px; }
-  .ground { position: absolute; left: 0px; width: 466px; }
-  .plat { position: absolute; border-radius: 7px; }
-  .coin { position: absolute; width: 16px; height: 16px; border-radius: 8px; background-color: #ffeb3b; }
-  .lava { position: absolute; left: 0px; width: 466px; background-image: linear-gradient(#ff5a00, #d92b00, #7a0000); }
-  .lavatop { position: absolute; left: 0px; width: 466px; }
-  .player { position: absolute; width: 28px; height: 40px; }
-  .tapzone { position: absolute; left: 0px; top: 0px; width: 466px; height: 340px; }
-  .score { position: absolute; left: 0px; top: 36px; width: 466px; text-align: center; color: #ffffff; }
-  .msg { position: absolute; left: 0px; top: 100px; width: 466px; text-align: center; color: #ffffff; }
-  .msg2 { position: absolute; left: 0px; top: 145px; width: 466px; text-align: center; color: #ffd740; }
-  .btn { position: absolute; top: 346px; height: 54px; border-radius: 27px; background-color: #3a4a8a; align-items: center; justify-content: center; }
-  .bl { left: 92px; width: 70px; }
-  .br { left: 170px; width: 70px; }
-  .bj { left: 258px; width: 114px; background-color: #1f9e5a; }
-  .bt { font-size: 30px; color: #ffffff; text-align: center; }
-  .burger { position: absolute; left: 330px; top: 52px; width: 42px; height: 42px; border-radius: 21px; align-items: center; justify-content: center; }
-  .bar { width: 18px; height: 3px; margin-top: 2px; margin-bottom: 2px; border-radius: 2px; }
-
-  .sphero { position: absolute; left: 205px; width: 56px; height: 80px; }
-  .sptitle { position: absolute; left: 0px; width: 466px; text-align: center; font-size: 54px; font-weight: bold; }
-  .spsub { position: absolute; left: 0px; top: 350px; width: 466px; text-align: center; font-size: 22px; }
-
-  .mtitle { position: absolute; left: 0px; top: 36px; width: 466px; text-align: center; }
-  .msub { position: absolute; left: 0px; top: 78px; width: 466px; text-align: center; }
-  .card { position: absolute; width: 150px; height: 104px; border-radius: 28px; align-items: center; justify-content: center; }
-  .c0 { left: 78px; top: 112px; }
-  .c1 { left: 238px; top: 112px; }
-  .c2 { left: 78px; top: 226px; }
-  .c3 { left: 238px; top: 226px; }
-  .cn { width: 150px; text-align: center; }
-  .cb { width: 150px; text-align: center; margin-top: 6px; }
-  .pill { position: absolute; height: 52px; border-radius: 26px; align-items: center; justify-content: center; }
-  .setp { left: 123px; top: 346px; width: 220px; }
-  .backp { left: 98px; top: 352px; width: 128px; }
-  .menup { left: 240px; top: 352px; width: 128px; }
-  .pt { font-size: 22px; font-weight: bold; text-align: center; }
-  .tile { position: absolute; width: 150px; height: 76px; border-radius: 24px; align-items: center; justify-content: center; }
-  .t0 { left: 80px; top: 92px; }
-  .t1 { left: 236px; top: 92px; }
-  .t2 { left: 80px; top: 176px; }
-  .t3 { left: 236px; top: 176px; }
-  .t4 { left: 80px; top: 260px; }
-  .t5 { left: 236px; top: 260px; }
-  .tlb { width: 150px; text-align: center; }
-  .tvl { width: 150px; text-align: center; margin-top: 4px; }
+.root { width: 466px; height: 466px; }
+.scr { position: absolute; left: 0px; top: 0px; width: 466px; height: 466px; }
+.game { background-image: linear-gradient(#0d1233, #4a2f8f); }
+.sky { position: absolute; left: 0px; top: 0px; width: 466px; height: 466px; }
+.moon { position: absolute; left: 310px; top: 70px; width: 44px; height: 44px; }
+.ground { position: absolute; left: 0px; width: 466px; }
+.plat { position: absolute; border-radius: 7px; }
+.coin { position: absolute; width: 16px; height: 16px; border-radius: 8px; background-color: #ffeb3b; }
+.lava { position: absolute; left: 0px; width: 466px; background-image: linear-gradient(#ff5a00, #d92b00, #7a0000); }
+.lavatop { position: absolute; left: 0px; width: 466px; }
+.player { position: absolute; width: 28px; height: 40px; }
+.tapzone { position: absolute; left: 0px; top: 0px; width: 466px; height: 340px; }
+.score { position: absolute; left: 0px; top: 36px; width: 466px; text-align: center; color: #ffffff; }
+.msg { position: absolute; left: 0px; top: 100px; width: 466px; text-align: center; color: #ffffff; }
+.msg2 { position: absolute; left: 0px; top: 145px; width: 466px; text-align: center; color: #ffd740; }
+.btn { position: absolute; top: 346px; height: 54px; border-radius: 27px; background-color: #3a4a8a; align-items: center; justify-content: center; }
+.bl { left: 92px; width: 70px; }
+.br { left: 170px; width: 70px; }
+.bj { left: 258px; width: 114px; background-color: #1f9e5a; }
+.bt { font-size: 30px; color: #ffffff; text-align: center; }
+.burger { position: absolute; left: 330px; top: 52px; width: 42px; height: 42px; border-radius: 21px; align-items: center; justify-content: center; }
+.bar { background-color: #ffffff; width: 18px; height: 3px; margin-top: 2px; margin-bottom: 2px; border-radius: 2px; }
+.sphero { position: absolute; left: 205px; width: 56px; height: 80px; }
+.sptitle { position: absolute; left: 0px; width: 466px; text-align: center; font-size: 54px; font-weight: bold; }
+.spsub { position: absolute; left: 0px; top: 350px; width: 466px; text-align: center; font-size: 22px; }
+.mtitle { position: absolute; left: 0px; top: 36px; width: 466px; text-align: center; }
+.msub { position: absolute; left: 0px; top: 78px; width: 466px; text-align: center; }
+.card { position: absolute; width: 150px; height: 104px; border-radius: 28px; align-items: center; justify-content: center; }
+.c0 { left: 78px; top: 112px; }
+.c1 { left: 238px; top: 112px; }
+.c2 { left: 78px; top: 226px; }
+.c3 { left: 238px; top: 226px; }
+.cn { width: 150px; text-align: center; }
+.cb { width: 150px; text-align: center; margin-top: 6px; }
+.pill { position: absolute; height: 52px; border-radius: 26px; align-items: center; justify-content: center; }
+.setp { left: 123px; top: 346px; width: 220px; }
+.backp { left: 98px; top: 352px; width: 128px; }
+.menup { left: 240px; top: 352px; width: 128px; }
+.pt { font-size: 22px; font-weight: bold; text-align: center; }
+.tile { position: absolute; width: 150px; height: 76px; border-radius: 24px; align-items: center; justify-content: center; }
+.t0 { left: 80px; top: 92px; }
+.t1 { left: 236px; top: 92px; }
+.t2 { left: 80px; top: 176px; }
+.t3 { left: 236px; top: 176px; }
+.t4 { left: 80px; top: 260px; }
+.t5 { left: 236px; top: 260px; }
+.tlb { width: 150px; text-align: center; }
+.tvl { width: 150px; text-align: center; margin-top: 4px; }
 </style>
-
 <script>
 import storage from '@system.storage'
-
 const PW = 28
 const PH = 40
 const GAP = 95
 const MODES = [
-  { n: 'Classic', base: 0.9, k: 150, narrow: 0, goal: 0, lava: true },
-  { n: 'Hardcore', base: 1.4, k: 90, narrow: 25, goal: 0, lava: true },
-  { n: 'Sprint 100m', base: 1.0, k: 130, narrow: 0, goal: 100, lava: true },
-  { n: 'Practice', base: 0, k: 0, narrow: 0, goal: 0, lava: false }
+{n:'Classic',base:0.9,k:150,narrow:0,goal:0,lava:true },
+{n:'Hardcore',base:1.4,k:90,narrow:25,goal:0,lava:true },
+{n:'Sprint 100m',base:1.0,k:130,narrow:0,goal:100,lava:true },
+{n:'Practice',base:0,k:0,narrow:0,goal:0,lava:false }
 ]
 const NEED = [0, 15, 40, 80]
 const SKINN = ['Yellow', 'Orange', 'Blue', 'Purple']
 const THEMES = [
-  { n: 'Purple', bg: '#141218', card: '#4a4458', tx: '#e8def8', ac: '#d0bcff', on: '#381e72' },
-  { n: 'Green', bg: '#101510', card: '#3b4b3d', tx: '#d7e8d6', ac: '#a5d6a7', on: '#0a3b12' },
-  { n: 'Blue', bg: '#0e1318', card: '#304151', tx: '#d6e6f5', ac: '#a8c7fa', on: '#062e6f' },
-  { n: 'Orange', bg: '#17120e', card: '#4f3b2a', tx: '#f4e0cf', ac: '#ffb77c', on: '#4a2700' }
+{n:'Purple', bg: '#141218', card: '#4a4458', tx: '#e8def8', ac: '#d0bcff', on: '#381e72' },
+{n:'Green', bg: '#101510', card: '#3b4b3d', tx: '#d7e8d6', ac: '#a5d6a7', on: '#0a3b12' },
+{n:'Blue', bg: '#0e1318', card: '#304151', tx: '#d6e6f5', ac: '#a8c7fa', on: '#062e6f' },
+{n:'Orange', bg: '#17120e', card: '#4f3b2a', tx: '#f4e0cf', ac: '#ffb77c', on: '#4a2700' }
 ]
 const PALS = [
-  { n: 'Classic', c: ['#fff176', '#4fc3f7', '#ba68c8', '#ffb74d'] },
-  { n: 'Neon', c: ['#ffff00', '#00e5ff', '#ff4081', '#76ff03'] },
-  { n: 'Pastel', c: ['#fff9c4', '#b3e5fc', '#e1bee7', '#ffe0b2'] },
-  { n: 'Mono', c: ['#ffffff', '#9e9e9e', '#bdbdbd', '#757575'] }
+{n:'Classic', c: ['#fff176', '#4fc3f7', '#ba68c8', '#ffb74d'] },
+{n:'Neon', c: ['#ffff00', '#00e5ff', '#ff4081', '#76ff03'] },
+{n:'Pastel', c: ['#fff9c4', '#b3e5fc', '#e1bee7', '#ffe0b2'] },
+{n:'Mono', c: ['#ffffff', '#9e9e9e', '#bdbdbd', '#757575'] }
 ]
 const FONTS = [
-  { n: 'Normal', f: 'sans-serif', w: 'normal' },
-  { n: 'Bold', f: 'sans-serif', w: 'bold' },
-  { n: 'Mono', f: 'monospace', w: 'normal' }
+{n:'Normal', f: 'sans-serif', w: 'normal' },
+{n:'Bold', f: 'sans-serif', w: 'bold' },
+{n:'Mono', f: 'monospace', w: 'normal' }
 ]
-const TSC = [{ n: 'Small', s: 0.85 }, { n: 'Medium', s: 1 }, { n: 'Large', s: 1.15 }]
+const TSC = [{n:'Small', s: 0.85 }, {n:'Medium', s: 1 }, {n:'Large', s: 1.15 }]
 const SKYS = ['Stars', 'Plain']
-
 function platW(k, nar) { return k === 0 ? 466 : Math.max(46, 115 - k - nar) }
 function isMoving(k) { return k >= 8 && k % 5 === 0 }
 function platX(k, w, tt) {
-  if (k === 0) return 0
-  let x = 233 + 120 * Math.sin(k * 0.8 + Math.sin(k * 0.37) * 2) - w / 2
-  if (isMoving(k)) x += 45 * Math.sin(tt * 0.06 + k)
-  return Math.max(60, Math.min(406 - w, Math.round(x)))
+if (k === 0) return 0
+let x = 233 + 120 * Math.sin(k * 0.8 + Math.sin(k * 0.37) * 2) - w / 2
+if (isMoving(k)) x += 45 * Math.sin(tt * 0.06 + k)
+return Math.max(60, Math.min(406 - w, Math.round(x)))
 }
-
 export default {
-  data: {
-    sSplash: true, sMenu: false, sSet: false, sGame: false,
-    bgc: '#141218', cardc: '#4a4458', textc: '#e8def8', accc: '#d0bcff', onacc: '#381e72',
-    fsScore: 36, fsMsg: 28, fsMsg2: 22, fsTitle: 32, fsSub: 20, fsCard: 24, fsCardB: 18, fsTL: 17, fsTV: 24,
-    ff: 'sans-serif', fw: 'normal', skyOn: true,
-    sa: 0, sb: 0, ty: 270, hy: 120,
-    menuSub: '', b0: '', b1: '', b2: '', b3: '',
-    v0: '', v1: '', v2: '', v3: '', v4: '', v5: '',
-    plats: [], cns: [], px: 219, pt: 260, lt: 466, lh: 0, lvh: 0, gt: 466, gh: 0, hs: '/t_hero0.png',
-    score: '0 m', msg: '', msg2: '', tl: '<', tr: '>', tj: 'START'
-  },
-
-  onInit() {
-    this.scr = 'splash'
-    this.prev = 'menu'
-    this.state = 'ready'
-    this.st = 0
-    this.mode = 0
-    this.skin = 0
-    this.total = 0
-    this.bests = [0, 0, 0, 0]
-    this.cfg = { th: 0, ts: 1, fo: 0, pa: 0, sk: 0 }
-    this.hL = false; this.hR = false; this.hJ = false; this.jq = false; this.touchOK = false
-    this.sigP = ''; this.sigC = ''; this.dirty = false
-    this.resetVars()
-    this.applyCfg()
-    this.refreshMenu()
-    this.render()
-    try {
-      for (let i = 0; i < 4; i++) {
-        storage.get({ key: 'tb' + i, success: (v) => { this.bests[i] = parseInt(v) || 0; this.refreshMenu() }, fail: () => {} })
-      }
-      storage.get({ key: 'tcoins', success: (v) => { this.total = parseInt(v) || 0; this.refreshMenu() }, fail: () => {} })
-      storage.get({
-        key: 'tset',
-        success: (v) => {
-          const a = String(v).split(',').map((x) => parseInt(x) || 0)
-          if (a.length >= 6) {
-            this.cfg = { th: a[0] % 4, ts: a[1] % 3, fo: a[2] % 3, pa: a[3] % 4, sk: a[4] % 2 }
-            this.skin = a[5] % 4
-            this.applyCfg()
-          }
-        },
-        fail: () => {}
-      })
-    } catch (e) {}
-  },
-
-  onShow() { if (!this.timer) this.timer = setInterval(() => this.tick(), 40) },
-  onHide() { clearInterval(this.timer); this.timer = null },
-  onDestroy() { clearInterval(this.timer); this.timer = null },
-
-  save(key, val) { try { storage.set({ key: key, value: String(val) }) } catch (e) {} },
-  saveCfg() {
-    const c = this.cfg
-    this.save('tset', [c.th, c.ts, c.fo, c.pa, c.sk, this.skin].join(','))
-  },
-
-  setScreen(n) {
-    this.scr = n
-    this.sSplash = n === 'splash'
-    this.sMenu = n === 'menu'
-    this.sSet = n === 'settings'
-    this.sGame = n === 'game'
-    this.hL = false; this.hR = false; this.hJ = false
-    if (n === 'game') this.dirty = true
-  },
-
-  applyCfg() {
-    const c = this.cfg
-    const t = THEMES[c.th]
-    const sc = TSC[c.ts].s
-    const f = FONTS[c.fo]
-    this.bgc = t.bg; this.cardc = t.card; this.textc = t.tx; this.accc = t.ac; this.onacc = t.on
-    this.fsScore = Math.round(36 * sc); this.fsMsg = Math.round(28 * sc); this.fsMsg2 = Math.round(22 * sc)
-    this.fsTitle = Math.round(32 * sc); this.fsSub = Math.round(20 * sc); this.fsCard = Math.round(24 * sc)
-    this.fsCardB = Math.round(18 * sc); this.fsTL = Math.round(17 * sc); this.fsTV = Math.round(24 * sc)
-    this.ff = f.f; this.fw = f.w
-    this.skyOn = c.sk === 0
-    this.hs = '/t_hero' + this.skin + '.png'
-    this.v0 = t.n; this.v1 = TSC[c.ts].n; this.v2 = f.n; this.v3 = PALS[c.pa].n; this.v4 = SKYS[c.sk]; this.v5 = SKINN[this.skin]
-    this.sigP = ''
-    this.dirty = true
-  },
-
-  bestText(i) {
-    const b = this.bests[i]
-    if (i === 2) return b ? 'Best ' + (b / 10) + 's' : 'No record'
-    if (i === 3) return 'No lava'
-    return 'Best ' + b + 'm'
-  },
-
-  refreshMenu() {
-    this.menuSub = 'Coins: ' + this.total
-    this.b0 = this.bestText(0); this.b1 = this.bestText(1); this.b2 = this.bestText(2); this.b3 = this.bestText(3)
-  },
-
-  // ---- splash / navigation ----
-  skipSplash() {
-    if (this.scr === 'splash') { this.refreshMenu(); this.setScreen('menu') }
-  },
-  pick(i) {
-    this.mode = i
-    this.resetVars()
-    this.state = 'ready'
-    this.tj = 'START'
-    this.msg = MODES[i].n
-    this.msg2 = this.bestText(i)
-    this.setScreen('game')
-  },
-  pick0() { this.pick(0) }, pick1() { this.pick(1) }, pick2() { this.pick(2) }, pick3() { this.pick(3) },
-  openSettings() { this.prev = 'menu'; this.setScreen('settings') },
-  openPause() {
-    if (this.state === 'play') this.state = 'paused'
-    this.prev = 'game'
-    this.setScreen('settings')
-  },
-  closeSettings() {
-    if (this.prev === 'game') {
-      if (this.state === 'paused') this.state = 'play'
-      this.setScreen('game')
-    } else {
-      this.refreshMenu()
-      this.setScreen('menu')
-    }
-  },
-  toMenu() {
-    this.state = 'ready'
-    this.refreshMenu()
-    this.setScreen('menu')
-  },
-
-  // ---- settings cycling ----
-  cTheme() { this.cfg.th = (this.cfg.th + 1) % 4; this.applyCfg(); this.saveCfg() },
-  cText() { this.cfg.ts = (this.cfg.ts + 1) % 3; this.applyCfg(); this.saveCfg() },
-  cFont() { this.cfg.fo = (this.cfg.fo + 1) % 3; this.applyCfg(); this.saveCfg() },
-  cPal() { this.cfg.pa = (this.cfg.pa + 1) % 4; this.applyCfg(); this.saveCfg() },
-  cSky() { this.cfg.sk = (this.cfg.sk + 1) % 2; this.applyCfg(); this.saveCfg() },
-  cSkin() {
-    const u = []
-    for (let i = 0; i < 4; i++) if (this.total >= NEED[i]) u.push(i)
-    this.skin = u[(u.indexOf(this.skin) + 1) % u.length]
-    this.applyCfg()
-    this.saveCfg()
-  },
-
-  // ---- game controls ----
-  lDown() { this.touchOK = true; this.hL = true },
-  lUp() { this.hL = false },
-  rDown() { this.touchOK = true; this.hR = true },
-  rUp() { this.hR = false },
-  jDown() { this.touchOK = true; this.hJ = true; this.startIfNeeded() },
-  jUp() { this.hJ = false },
-
-  startIfNeeded() {
-    if (this.state === 'ready' || this.state === 'dead' || this.state === 'win') {
-      this.resetVars()
-      this.state = 'play'
-      this.msg = ''
-      this.msg2 = ''
-      this.tj = 'JUMP'
-      return true
-    }
-    return false
-  },
-  tapAny() { if (this.state === 'play') this.jq = true },
-  lClick() { if (!this.touchOK && this.state === 'play') this.x = Math.max(0, this.x - 40) },
-  rClick() { if (!this.touchOK && this.state === 'play') this.x = Math.min(438, this.x + 40) },
-  jClick() {
-    if (this.touchOK) return
-    if (!this.startIfNeeded()) this.jq = true
-  },
-
-  resetVars() {
-    this.x = 219
-    this.y = 0
-    this.vy = 0
-    this.air = 0
-    this.f = 1
-    this.cam = -250
-    this.lava = MODES[this.mode].lava ? 230 : 1000000
-    this.top = 0
-    this.tt = 0
-    this.onK = -1
-    this.got = {}
-    this.run = 0
-  },
-
-  finish(win) {
-    this.dirty = true
-    this.state = win ? 'win' : 'dead'
-    this.tj = 'START'
-    this.total += this.run
-    this.save('tcoins', this.total)
-    if (win) {
-      const t10 = Math.round(this.tt * 0.4)
-      const b = this.bests[this.mode]
-      if (!b || t10 < b) { this.bests[this.mode] = t10; this.save('tb' + this.mode, t10) }
-      this.msg = 'Finish! ' + (t10 / 10) + ' s'
-    } else {
-      if (this.mode !== 2 && this.top > this.bests[this.mode]) {
-        this.bests[this.mode] = this.top
-        this.save('tb' + this.mode, this.top)
-      }
-      this.msg = this.mode === 3 ? 'Fell' : 'Lava! ' + this.top + ' m'
-    }
-    this.msg2 = '+' + this.run + ' coins, total ' + this.total
-    this.refreshMenu()
-  },
-
-  tick() {
-    if (this.scr === 'splash') {
-      this.st++
-      const t = this.st
-      this.sa = Math.min(1, t / 20)
-      this.sb = t > 30 ? Math.min(1, (t - 30) / 15) : 0
-      this.ty = Math.round(236 + (1 - this.sa) * 34)
-      this.hy = Math.round(120 - 46 * Math.abs(Math.sin(t * 0.16)))
-      if (t > 75) this.skipSplash()
-      return
-    }
-    if (this.scr !== 'game') return
-
-    if (this.state === 'play') {
-      const m = MODES[this.mode]
-      const nar = m.narrow
-
-      if (this.onK > 0 && isMoving(this.onK)) {
-        const w0 = platW(this.onK, nar)
-        const dxp = platX(this.onK, w0, this.tt + 1) - platX(this.onK, w0, this.tt)
-        this.x = Math.max(0, Math.min(466 - PW, this.x + dxp))
-      }
-      this.tt++
-
-      const dx = (this.hR ? 1 : 0) - (this.hL ? 1 : 0)
-      if (dx !== 0) this.f = dx
-      this.x = Math.max(0, Math.min(466 - PW, this.x + dx * 9))
-
-      if ((this.hJ || this.jq) && this.air < 4) { this.vy = -19; this.air = 99 }
-      this.jq = false
-
-      const prev = this.y
-      this.vy = Math.min(this.vy + 1.3, 26)
-      this.y += this.vy
-      this.air++
-
-      let landed = false
-      if (this.vy > 0) {
-        const k0 = Math.round(-this.y / GAP)
-        for (let k = Math.max(0, k0 - 1); k <= k
+data: {
+sSplash: true, sMenu: false, sSet: false, sGame: false,
+bgc: '#141218', cc: '#4a4458', tc: '#e8def8', ak: '#d0bcff', oc: '#381e72',
+s1: 36, s2: 28, s3: 22, s4: 32, s5: 20, s6: 24, s7: 18, s8: 17, s9: 24,
+ff: 'sans-serif', fw: 'normal', so: true,
+sa: 0, sb: 0, ty: 270, hy: 120,
+ms: '', b0: '', b1: '', b2: '', b3: '',
+v0: '', v1: '', v2: '', v3: '', v4: '', v5: '',
+plats: [], cns: [], px: 219, pt: 260, lt: 466, lh: 0, lvh: 0, gt: 466, gh: 0, hs: '/t_hero0.png',
+score: '0 m', msg: '', msg2: '', tl: '<', tr: '>', tj: 'START'
+},
+onInit() {
+this.scr = 'splash'
+this.prev = 'menu'
+this.state = 'ready'
+this.st = 0
+this.mode = 0
+this.skin = 0
+this.total = 0
+this.bests = [0, 0, 0, 0]
+this.cfg = { th: 0, ts: 1, fo: 0, pa: 0, sk: 0 }
+this.hL = false; this.hR = false; this.hJ = false; this.jq = false; this.touchOK = false
+this.sigP = ''; this.sigC = ''; this.dirty = false
+this.resetVars()
+this.applyCfg()
+this.refreshMenu()
+this.render()
+try {
+for (let i = 0; i < 4; i++) {
+storage.get({ key: 'tb' + i, success: (v) => { this.bests[i] = parseInt(v) || 0; this.refreshMenu() }, fail: () => {} })
+}
+storage.get({ key: 'tcoins', success: (v) => { this.total = parseInt(v) || 0; this.refreshMenu() }, fail: () => {} })
+storage.get({
+key: 'tset',
+success: (v) => {
+const a = String(v).split(',').map((x) => parseInt(x) || 0)
+if (a.length >= 6) {
+this.cfg = { th: a[0] % 4, ts: a[1] % 3, fo: a[2] % 3, pa: a[3] % 4, sk: a[4] % 2 }
+this.skin = a[5] % 4
+this.applyCfg()
+}
+},
+fail: () => {}
+})
+} catch (e) {}
+},
+onShow() { if (!this.timer) this.timer = setInterval(() => this.tick(), 40) },
+onHide() { clearInterval(this.timer); this.timer = null },
+onDestroy() { clearInterval(this.timer); this.timer = null },
+save(key, val) { try { storage.set({ key: key, value: String(val) }) } catch (e) {} },
+saveCfg() {
+const c = this.cfg
+this.save('tset', [c.th, c.ts, c.fo, c.pa, c.sk, this.skin].join(','))
+},
+setScreen(n) {
+this.scr = n
+this.sSplash = n === 'splash'
+this.sMenu = n === 'menu'
+this.sSet = n === 'settings'
+this.sGame = n === 'game'
+this.hL = false; this.hR = false; this.hJ = false
+if (n === 'game') this.dirty = true
+},
+applyCfg() {
+const c = this.cfg
+const t = THEMES[c.th]
+const sc = TSC[c.ts].s
+const f = FONTS[c.fo]
+this.bgc = t.bg; this.cc = t.card; this.tc = t.tx; this.ak = t.ac; this.oc = t.on
+const z = [36, 28, 22, 32, 20, 24, 18, 17, 24]
+for (let i = 0; i < 9; i++) this['s' + (i + 1)] = Math.round(z[i] * sc)
+this.ff = f.f; this.fw = f.w
+this.so = c.sk === 0
+this.hs = '/t_hero' + this.skin + '.png'
+this.v0 = t.n; this.v1 = TSC[c.ts].n; this.v2 = f.n; this.v3 = PALS[c.pa].n; this.v4 = SKYS[c.sk]; this.v5 = SKINN[this.skin]
+this.sigP = ''
+this.dirty = true
+},
+bestText(i) {
+const b = this.bests[i]
+if (i === 2) return b ? 'Best ' + (b / 10) + 's' : 'No record'
+if (i === 3) return 'No lava'
+return 'Best ' + b + 'm'
+},
+refreshMenu() {
+this.ms = 'Coins: ' + this.total
+this.b0 = this.bestText(0); this.b1 = this.bestText(1); this.b2 = this.bestText(2); this.b3 = this.bestText(3)
+},
+skipSplash() {
+if (this.scr === 'splash') { this.refreshMenu(); this.setScreen('menu') }
+},
+pick(i) {
+this.mode = i
+this.resetVars()
+this.state = 'ready'
+this.tj = 'START'
+this.msg = MODES[i].n
+this.msg2 = this.bestText(i)
+this.setScreen('game')
+},
+pick0() { this.pick(0) }, pick1() { this.pick(1) }, pick2() { this.pick(2) }, pick3() { this.pick(3) },
+openSettings() { this.prev = 'menu'; this.setScreen('settings') },
+openPause() {
+if (this.state === 'play') this.state = 'paused'
+this.prev = 'game'
+this.setScreen('settings')
+},
+closeSettings() {
+if (this.prev === 'game') {
+if (this.state === 'paused') this.state = 'play'
+this.setScreen('game')
+} else {
+this.refreshMenu()
+this.setScreen('menu')
+}
+},
+toMenu() {
+this.state = 'ready'
+this.refreshMenu()
+this.setScreen('menu')
+},
+cTheme() { this.cfg.th = (this.cfg.th + 1) % 4; this.applyCfg(); this.saveCfg() },
+cText() { this.cfg.ts = (this.cfg.ts + 1) % 3; this.applyCfg(); this.saveCfg() },
+cFont() { this.cfg.fo = (this.cfg.fo + 1) % 3; this.applyCfg(); this.saveCfg() },
+cPal() { this.cfg.pa = (this.cfg.pa + 1) % 4; this.applyCfg(); this.saveCfg() },
+cSky() { this.cfg.sk = (this.cfg.sk + 1) % 2; this.applyCfg(); this.saveCfg() },
+cSkin() {
+const u = []
+for (let i = 0; i < 4; i++) if (this.total >= NEED[i]) u.push(i)
+this.skin = u[(u.indexOf(this.skin) + 1) % u.length]
+this.applyCfg()
+this.saveCfg()
+},
+lDown() { this.touchOK = true; this.hL = true },
+lUp() { this.hL = false },
+rDown() { this.touchOK = true; this.hR = true },
+rUp() { this.hR = false },
+jDown() { this.touchOK = true; this.hJ = true; this.startIfNeeded() },
+jUp() { this.hJ = false },
+startIfNeeded() {
+if (this.state === 'ready' || this.state === 'dead' || this.state === 'win') {
+this.resetVars()
+this.state = 'play'
+this.msg = ''
+this.msg2 = ''
+this.tj = 'JUMP'
+return true
+}
+return false
+},
+tapAny() { if (this.state === 'play') this.jq = true },
+lClick() { if (!this.touchOK && this.state === 'play') this.x = Math.max(0, this.x - 40) },
+rClick() { if (!this.touchOK && this.state === 'play') this.x = Math.min(438, this.x + 40) },
+jClick() {
+if (this.touchOK) return
+if (!this.startIfNeeded()) this.jq = true
+},
+resetVars() {
+this.x = 219
+this.y = 0
+this.vy = 0
+this.air = 0
+this.f = 1
+this.cam = -250
+this.lava = MODES[this.mode].lava ? 230 : 1000000
+this.top = 0
+this.tt = 0
+this.onK = -1
+this.got = {}
+this.run = 0
+},
+finish(win) {
+this.dirty = true
+this.state = win ? 'win' : 'dead'
+this.tj = 'START'
+this.total += this.run
+this.save('tcoins', this.total)
+if (win) {
+const t10 = Math.round(this.tt * 0.4)
+const b = this.bests[this.mode]
+if (!b || t10 < b) { this.bests[this.mode] = t10; this.save('tb' + this.mode, t10) }
+this.msg = 'Finish! ' + (t10 / 10) + ' s'
+} else {
+if (this.mode !== 2 && this.top > this.bests[this.mode]) {
+this.bests[this.mode] = this.top
+this.save('tb' + this.mode, this.top)
+}
+this.msg = this.mode === 3 ? 'Fell' : 'Lava! ' + this.top + ' m'
+}
+this.msg2 = '+' + this.run + ' coins, total ' + this.total
+this.refreshMenu()
+},
+tick() {
+if (this.scr === 'splash') {
+this.st++
+const t = this.st
+this.sa = Math.min(1, t / 20)
+this.sb = t > 30 ? Math.min(1, (t - 30) / 15) : 0
+this.ty = Math.round(236 + (1 - this.sa) * 34)
+this.hy = Math.round(120 - 46 * Math.abs(Math.sin(t * 0.16)))
+if (t > 75) this.skipSplash()
+return
+}
+if (this.scr !== 'game') return
+if (this.state === 'play') {
+const m = MODES[this.mode]
+const nar = m.narrow
+if (this.onK > 0 && isMoving(this.onK)) {
+const w0 = platW(this.onK, nar)
+const dxp = platX(this.onK, w0, this.tt + 1) - platX(this.onK, w0, this.tt)
+this.x = Math.max(0, Math.min(466 - PW, this.x + dxp))
+}
+this.tt++
+const dx = (this.hR ? 1 : 0) - (this.hL ? 1 : 0)
+if (dx !== 0) this.f = dx
+this.x = Math.max(0, Math.min(466 - PW, this.x + dx * 9))
+if ((this.hJ || this.jq) && this.air < 4) { this.vy = -19; this.air = 99 }
+this.jq = false
+const prev = this.y
+this.vy = Math.min(this.vy + 1.3, 26)
+this.y += this.vy
+this.air++
+let landed = false
+if (this.vy > 0) {
+const k0 = Math.round(-this.y / GAP)
+for (let k = Math.max(0, k0 - 1); k <= k0 + 1; k++) {
+const top = -k * GAP
+const w = platW(k, nar)
+const x = platX(k, w, this.tt)
+if (prev <= top + 1 && this.y >= top && this.x + PW > x && this.x < x + w) {
+this.y = top
+this.vy = 0
+this.air = 0
+this.onK = k
+landed = true
+break
+}
+}
+}
+if (!landed) this.onK = -1
+const kc = Math.round(-this.y / GAP)
+for (let k = Math.max(1, kc - 1); k <= kc + 1; k++) {
+if (k % 2 === 1 && !this.got[k]) {
+const w = platW(k, nar)
+const cx = platX(k, w, this.tt) + w / 2
+const cy = -k * GAP - 24
+if (Math.abs(this.x + PW / 2 - cx) < 24 && Math.abs(this.y - PH / 2 - cy) < 28) {
+this.got[k] = true
+this.run++
+}
+}
+}
+const h = Math.floor(-this.y / 10)
+if (h > this.top) this.top = h
+if (m.goal && this.top >= m.goal) { this.finish(true) }
+else if (m.lava) {
+this.lava -= m.base + this.top / m.k
+if (this.y > this.lava) this.finish(false)
+} else if (this.y > 400) {
+this.y = 0; this.vy = 0; this.x = 219
+}
+this.cam += (this.y - 250 - this.cam) * 0.25
+this.render()
+} else if (this.dirty) {
+this.dirty = false
+this.render()
+}
+},
+render() {
+const cam = this.cam
+const nar = MODES[this.mode].narrow
+const pal = PALS[this.cfg.pa].c
+const kmin = Math.max(0, Math.ceil(-(cam + 480) / GAP))
+const kmax = Math.floor(-(cam - 40) / GAP)
+const list = []
+const coins = []
+let gt = 466
+let gh = 0
+for (let k = kmin; k <= kmax; k++) {
+const w = platW(k, nar)
+const x = platX(k, w, this.tt)
+const t = Math.round(-k * GAP - cam)
+const h = k === 0 ? 90 : 14
+const a = Math.max(0, t)
+const b = Math.min(466, t + h)
+if (k === 0) {
+if (b > a) { gt = a; gh = b - a }
+continue
+}
+if (b > a) {
+list.push({ x: x, t: a, w: w, h: b - a, c: isMoving(k) ? pal[0] : pal[1 + (k % 3)] })
+}
+if (k % 2 === 1 && !this.got[k]) {
+const ct = Math.round(-k * GAP - 32 - cam)
+if (ct >= 0 && ct <= 440) coins.push({ x: Math.round(x + w / 2 - 8), t: ct })
+}
+}
+const sp = JSON.stringify(list)
+if (sp !== this.sigP) { this.sigP = sp; this.plats = list }
+const sc = JSON.stringify(coins)
+if (sc !== this.sigC) { this.sigC = sc; this.cns = coins }
+this.gt = gt
+this.gh = gh
+this.px = Math.round(this.x)
+this.pt = Math.max(0, Math.min(426, Math.round(this.y - cam - PH)))
+const l = Math.round(this.lava - cam)
+this.lt = Math.max(0, Math.min(466, l))
+this.lh = 466 - this.lt
+this.lvh = Math.min(24, this.lh)
+this.score = this.top + ' m  ' + this.run + '$'
+}
+}
+</script>
