@@ -13,7 +13,7 @@ jobs:
       - name: Prepare src
         run: |
           mkdir -p src
-          cp -r manifest.json app.ux logo.png pages src/
+          cp -r manifest.json app.ux pages src/ && cp *.png src/
       - name: Generate signing keys
         run: |
           mkdir -p sign
