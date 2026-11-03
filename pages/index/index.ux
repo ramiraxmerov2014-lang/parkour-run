@@ -43,10 +43,10 @@ const PW = 28
 const PH = 40
 const GAP = 95
 const MODES = [
-  { n: 'Классика', base: 0.9, k: 150, narrow: 0, goal: 0, lava: true },
-  { n: 'Хардкор', base: 1.4, k: 90, narrow: 25, goal: 0, lava: true },
-  { n: 'Спринт 100 м', base: 1.0, k: 130, narrow: 0, goal: 100, lava: true },
-  { n: 'Тренировка', base: 0, k: 0, narrow: 0, goal: 0, lava: false }
+  { n: 'Classic', base: 0.9, k: 150, narrow: 0, goal: 0, lava: true },
+  { n: 'Hardcore', base: 1.4, k: 90, narrow: 25, goal: 0, lava: true },
+  { n: 'Sprint 100m', base: 1.0, k: 130, narrow: 0, goal: 100, lava: true },
+  { n: 'Practice', base: 0, k: 0, narrow: 0, goal: 0, lava: false }
 ]
 const SKINS = ['#ffd740', '#ff7043', '#4fc3f7', '#b388ff']
 const NEED = [0, 15, 40, 80]
@@ -63,7 +63,7 @@ function platX(k, w, tt) {
 export default {
   data: {
     plats: [], cns: [], px: 219, pt: 260, ex: 16, lt: 466, lh: 0, pc: '#ffd740',
-    score: '0 м', msg: '', msg2: '', tl: '<', tr: '>', tj: 'СТАРТ'
+    score: '0 m', msg: '', msg2: '', tl: '<', tr: '>', tj: 'START'
   },
 
   onInit() {
@@ -96,10 +96,10 @@ export default {
     const b = this.bests[this.mode]
     let rec = ''
     if (m.lava || this.mode === 3) {
-      rec = m.goal ? (b ? 'Лучшее: ' + (b / 10) + ' с' : '') : (this.mode === 3 ? '' : 'Рекорд: ' + b + ' м')
+      rec = m.goal ? (b ? 'Best: ' + (b / 10) + ' s' : '') : (this.mode === 3 ? '' : 'Best: ' + b + ' m')
     }
     if (this.state !== 'dead' && this.state !== 'win') this.msg = m.n
-    this.msg2 = rec + (rec ? '  ' : '') + 'Монет: ' + this.total
+    this.msg2 = rec + (rec ? '  ' : '') + 'Coins: ' + this.total
     this.pc = SKINS[this.skin]
   },
 
@@ -136,7 +136,7 @@ export default {
       this.state = 'play'
       this.msg = ''
       this.msg2 = ''
-      this.tj = 'ПРЫЖОК'
+      this.tj = 'JUMP'
       return true
     }
     return false
@@ -177,7 +177,7 @@ export default {
 
   finish(win) {
     this.state = win ? 'win' : 'dead'
-    this.tj = 'СТАРТ'
+    this.tj = 'START'
     this.total += this.run
     this.save('tcoins', this.total)
     const m = MODES[this.mode]
@@ -185,15 +185,15 @@ export default {
       const t10 = Math.round(this.tt * 0.4)
       const b = this.bests[this.mode]
       if (!b || t10 < b) { this.bests[this.mode] = t10; this.save('tb' + this.mode, t10) }
-      this.msg = 'Финиш! ' + (t10 / 10) + ' с'
+      this.msg = 'Finish! ' + (t10 / 10) + ' s'
     } else {
       if (this.mode !== 2 && this.top > this.bests[this.mode]) {
         this.bests[this.mode] = this.top
         this.save('tb' + this.mode, this.top)
       }
-      this.msg = this.mode === 3 ? 'Упал' : 'Лава! ' + this.top + ' м'
+      this.msg = this.mode === 3 ? 'Fell' : 'Lava! ' + this.top + ' m'
     }
-    this.msg2 = '+' + this.run + ' монет, всего ' + this.total
+    this.msg2 = '+' + this.run + ' coins, total ' + this.total
   },
 
   tick() {
@@ -201,7 +201,7 @@ export default {
       const m = MODES[this.mode]
       const nar = m.narrow
 
-      // платформа под ногами двигает героя
+      // moving platform carries player
       if (this.onK > 0 && isMoving(this.onK)) {
         const w0 = platW(this.onK, nar)
         const dxp = platX(this.onK, w0, this.tt + 1) - platX(this.onK, w0, this.tt)
@@ -240,7 +240,7 @@ export default {
       }
       if (!landed) this.onK = -1
 
-      // монеты
+      // coins
       const kc = Math.round(-this.y / GAP)
       for (let k = Math.max(1, kc - 1); k <= kc + 1; k++) {
         if (k % 2 === 1 && !this.got[k]) {
@@ -303,7 +303,7 @@ export default {
     const l = Math.round(this.lava - cam)
     this.lt = Math.max(0, Math.min(466, l))
     this.lh = 466 - this.lt
-    this.score = this.top + ' м  ' + this.run + '$'
+    this.score = this.top + ' m  ' + this.run + '$'
   }
 }
 </script>
