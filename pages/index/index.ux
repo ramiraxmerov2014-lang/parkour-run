@@ -2,8 +2,9 @@
   <div class="root">
     <image class="sky" src="/t_sky.png"></image>
     <image class="moon" src="/t_moon.png"></image>
-    <image class="plat" for="{{plats}}" src="{{$item.s}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></image>
-    <image class="coin" for="{{cns}}" src="/t_coin.png" style="left: {{$item.x}}px; top: {{$item.t}}px;"></image>
+    <image class="ground" src="/t_ground.png" style="top: {{gt}}px; height: {{gh}}px;"></image>
+    <div class="plat" for="{{plats}}" style="left: {{$item.x}}px; top: {{$item.t}}px; width: {{$item.w}}px; height: {{$item.h}}px; background-color: {{$item.c}};"></div>
+    <div class="coin" for="{{cns}}" style="left: {{$item.x}}px; top: {{$item.t}}px;"></div>
     <div class="lava" style="top: {{lt}}px; height: {{lh}}px;"></div>
     <image class="lavatop" src="/t_lava.png" style="top: {{lt}}px; height: {{lvh}}px;"></image>
     <image class="player" src="{{hs}}" style="left: {{px}}px; top: {{pt}}px;"></image>
@@ -21,8 +22,9 @@
   .root { width: 466px; height: 466px; background-image: linear-gradient(#0d1233, #4a2f8f); }
   .sky { position: absolute; left: 0px; top: 0px; width: 466px; height: 466px; }
   .moon { position: absolute; left: 310px; top: 70px; width: 44px; height: 44px; }
-  .plat { position: absolute; }
-  .coin { position: absolute; width: 16px; height: 16px; }
+  .ground { position: absolute; left: 0px; width: 466px; }
+  .plat { position: absolute; border-radius: 7px; }
+  .coin { position: absolute; width: 16px; height: 16px; border-radius: 8px; background-color: #ffeb3b; }
   .lava { position: absolute; left: 0px; width: 466px; background-image: linear-gradient(#ff5a00, #d92b00, #7a0000); }
   .lavatop { position: absolute; left: 0px; width: 466px; }
   .player { position: absolute; width: 28px; height: 40px; }
@@ -63,7 +65,7 @@ function platX(k, w, tt) {
 
 export default {
   data: {
-    plats: [], cns: [], px: 219, pt: 260, lt: 466, lh: 0, lvh: 0, pc: '#ffd740', hs: '/t_hero0.png',
+    plats: [], cns: [], px: 219, pt: 260, lt: 466, lh: 0, lvh: 0, gt: 466, gh: 0, pc: '#ffd740', hs: '/t_hero0.png',
     score: '0 m', msg: '', msg2: '', tl: '<', tr: '>', tj: 'START'
   },
 
@@ -74,6 +76,7 @@ export default {
     this.total = 0
     this.bests = [0, 0, 0, 0]
     this.hL = false; this.hR = false; this.hJ = false; this.jq = false; this.touchOK = false
+    this.sigP = ''; this.sigC = ''; this.dirty = false
     this.resetVars()
     this.updateMenu()
     this.render()
@@ -121,6 +124,7 @@ export default {
 
   changeMode(d) {
     this.mode = (this.mode + d + 4) % 4
+    this.dirty = true
     if (this.state === 'dead' || this.state === 'win') this.state = 'ready'
     this.msg = MODES[this.mode].n
     this.updateMenu()
@@ -179,6 +183,7 @@ export default {
   },
 
   finish(win) {
+    this.dirty = true
     this.state = win ? 'win' : 'dead'
     this.tj = 'START'
     this.total += this.run
@@ -269,8 +274,11 @@ export default {
       }
 
       this.cam += (this.y - 250 - this.cam) * 0.25
+      this.render()
+    } else if (this.dirty) {
+      this.dirty = false
+      this.render()
     }
-    this.render()
   },
 
   render() {
@@ -280,6 +288,8 @@ export default {
     const kmax = Math.floor(-(cam - 40) / GAP)
     const list = []
     const coins = []
+    let gt = 466
+    let gh = 0
     for (let k = kmin; k <= kmax; k++) {
       const w = platW(k, nar)
       const x = platX(k, w, this.tt)
@@ -287,11 +297,14 @@ export default {
       const h = k === 0 ? 90 : 14
       const a = Math.max(0, t)
       const b = Math.min(466, t + h)
+      if (k === 0) {
+        if (b > a) { gt = a; gh = b - a }
+        continue
+      }
       if (b > a) {
         list.push({
           x: x, t: a, w: w, h: b - a,
-          s: k === 0 ? '/t_ground.png' : (isMoving(k) ? '/t_plat3.png' : '/t_plat' + (k % 3) + '.png'),
-          c: k === 0 ? '#3ddc84' : (isMoving(k) ? '#fff176' : (k % 3 === 0 ? '#4fc3f7' : (k % 3 === 1 ? '#ba68c8' : '#ffb74d')))
+          c: isMoving(k) ? '#fff176' : (k % 3 === 0 ? '#4fc3f7' : (k % 3 === 1 ? '#ba68c8' : '#ffb74d'))
         })
       }
       if (k % 2 === 1 && !this.got[k]) {
@@ -299,11 +312,15 @@ export default {
         if (ct >= 0 && ct <= 440) coins.push({ x: Math.round(x + w / 2 - 8), t: ct })
       }
     }
-    this.plats = list
-    this.cns = coins
+    const sp = JSON.stringify(list)
+    if (sp !== this.sigP) { this.sigP = sp; this.plats = list }
+    const sc = JSON.stringify(coins)
+    if (sc !== this.sigC) { this.sigC = sc; this.cns = coins }
+    this.gt = gt
+    this.gh = gh
     this.px = Math.round(this.x)
     this.pt = Math.max(0, Math.min(426, Math.round(this.y - cam - PH)))
-        const l = Math.round(this.lava - cam)
+    const l = Math.round(this.lava - cam)
     this.lt = Math.max(0, Math.min(466, l))
     this.lh = 466 - this.lt
     this.lvh = Math.min(24, this.lh)
